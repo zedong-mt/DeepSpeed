@@ -478,7 +478,7 @@ def all_reduce(tensor,
     # timers.start()
     # TensorBoard logging for comm calls.?
     global cdb
-    #print(f'op = {op}, cdb= {cdb.name}')
+    #print(f'op = {op}, cdb= {cdb.name}') 
     return cdb.all_reduce(tensor, op, group, async_op)
 
 

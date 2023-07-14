@@ -1052,7 +1052,7 @@ class Init(InsertPostInitMethodToModuleSubClasses):
                 param_buffer = torch.empty(
                     buffer_size,
                     dtype=param.dtype if not quant else torch.int8,
-                    device=get_accelerator().current_device(),
+                    device=get_accelerator().current_device_name(),
                     requires_grad=False,
                 )
                 param_ds_tensor = param.ds_secondary_tensor if not forward and param.ds_secondary_tensor is not None else param.ds_tensor
@@ -1095,7 +1095,7 @@ class Init(InsertPostInitMethodToModuleSubClasses):
                 flat_tensor = torch.empty(partition_sz * world_size,
                                           dtype=get_only_unique_item(p.dtype
                                                                      for p in params) if not quant else torch.int8,
-                                          device=get_accelerator().current_device(),
+                                          device=get_accelerator().current_device_name(),
                                           requires_grad=False)
                 if not quant:
                     partitions: List[Parameter] = []
@@ -1127,11 +1127,11 @@ class Init(InsertPostInitMethodToModuleSubClasses):
                         use_secondary_tensor = True
                         quantized_param, scales = self.quantizer_module.quantize(
                             instrument_w_nvtx(torch.cat)(
-                                [p.ds_secondary_tensor.to(get_accelerator().current_device()) for p in params]))
+                                [p.ds_secondary_tensor.to(get_accelerator().current_device_name()) for p in params]))
                     else:
                         quantized_param, scales = self.quantizer_module.quantize(
                             instrument_w_nvtx(
-                                torch.cat)([p.ds_tensor.to(get_accelerator().current_device()) for p in params]))
+                                torch.cat)([p.ds_tensor.to(get_accelerator().current_device_name()) for p in params]))
                     handle = _dist_allgather_fn(quantized_param, flat_tensor, ds_process_group)
                     quant_info = QuantizationInfo()
                     quant_scale_buffer = torch.empty(

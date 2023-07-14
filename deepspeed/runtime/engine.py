@@ -120,6 +120,10 @@ def split_half_float_double_sparse(tensors):
         SparseTensor.type()
     ]
 
+    private_type = "privateuseone"
+    supported_types.extend(["torch.{}.HalfTensor".format(private_type), "torch.{}.FloatTensor".format(private_type),
+        "torch.{}.DoubleTensor".format(private_type)])
+
     for t in tensors:
         assert t.type() in supported_types, f"attempting to reduce an unsupported grad type: {t.type()}"
 
@@ -1687,6 +1691,7 @@ class DeepSpeedEngine(Module):
         self.module.train(False)
 
     def _scale_loss_by_gas(self, prescaled_loss):
+        print(f"_scale_loss_by_gas prescaled_loss:{prescaled_loss}")
         if isinstance(prescaled_loss, torch.Tensor):
             scaled_loss = prescaled_loss / self.gradient_accumulation_steps()
         elif isinstance(prescaled_loss, tuple) or isinstance(prescaled_loss, list):
@@ -1701,6 +1706,7 @@ class DeepSpeedEngine(Module):
             if self.warn_unscaled_loss:
                 logger.warning(f"DeepSpeed unable to scale loss because of type: {type(prescaled_loss)}")
                 self.warn_unscaled_loss = False
+        print(f"_scale_loss_by_gas scaled_loss:{scaled_loss}")
 
         return scaled_loss
 

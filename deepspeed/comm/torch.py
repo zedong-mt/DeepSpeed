@@ -144,6 +144,7 @@ class TorchBackend(Backend):
                                                  init_method=init_method,
                                                  rank=rank,
                                                  world_size=world_size)
+        print(f"init_process_group, {backend}, {init_method}, {rank}, {world_size}")
         self.using_mpi = torch.distributed.get_backend() == 'mpi'
 
     def all_reduce(self, tensor, op=torch.distributed.ReduceOp.SUM, group=None, async_op=False):
